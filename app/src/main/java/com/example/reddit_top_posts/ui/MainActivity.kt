@@ -1,7 +1,8 @@
-package com.example.reddittopposts
+package com.example.reddit_top_posts.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.reddittopposts.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

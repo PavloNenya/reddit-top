@@ -1,4 +1,4 @@
-package com.example.reddittopposts
+package com.example.reddit_top_posts
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

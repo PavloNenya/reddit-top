@@ -1,4 +1,4 @@
-package com.example.reddittopposts
+package com.example.reddit_top_posts
 
 import org.junit.Test
 
