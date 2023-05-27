@@ -46,8 +46,8 @@
 
     <ImageView
         android:id="@+id/thumbnail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="221dp"
+        android:layout_height="67dp"
         android:layout_margin="10dp"
         android:src="@drawable/image_placeholder"
         app:layout_constraintBottom_toBottomOf="parent"

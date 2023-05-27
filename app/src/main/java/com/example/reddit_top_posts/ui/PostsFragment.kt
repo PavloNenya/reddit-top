@@ -18,9 +18,10 @@ import com.example.reddittopposts.databinding.FragmentPostsBinding
 
 //@AndroidEntryPoint
 class PostsFragment : Fragment() {
+
     private lateinit var binding: FragmentPostsBinding
-    private val postsViewModel = PostsViewModel()
-//    @Inject
+
+    private val postsViewModel: PostsViewModel by viewModels()
     private var postsAdapter = PostsAdapter()
 
     override fun onCreateView(
@@ -31,8 +32,6 @@ class PostsFragment : Fragment() {
         binding = FragmentPostsBinding.inflate(layoutInflater, container, false);
         return binding.root
     }
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

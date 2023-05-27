@@ -1,31 +1,35 @@
 package com.example.reddit_top_posts.pagination
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.reddit_top_posts.config.POSTS_NUMBER
 import com.example.reddit_top_posts.redditapi.ApiClient
 import com.example.reddit_top_posts.redditapi.response.PostsListResponse
+import kotlin.math.max
 
 class PostSource(
     private val apiClient: ApiClient
-) : PagingSource<String, PostsListResponse.Data.Child.Post>(){
+) : PagingSource<Int, PostsListResponse.Data.Child.Post>() {
+    private var lastAfter: String? = null
 
-    override fun getRefreshKey(state: PagingState<String, PostsListResponse.Data.Child.Post>): String? {
+    override fun getRefreshKey(state: PagingState<Int, PostsListResponse.Data.Child.Post>): Int? {
         return null
     }
 
-    override suspend fun load(params: LoadParams<String>): LoadResult<String, PostsListResponse.Data.Child.Post> {
-        val response = apiClient.getPosts(params.key)
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PostsListResponse.Data.Child.Post> {
+        val currentPage = params.key ?: 0
+        val response = apiClient.getPosts(lastAfter)
         val data = response.body()!!.data
         val postsList = mutableListOf<PostsListResponse.Data.Child.Post>()
         postsList.addAll(data.posts.map { it.post })
+        lastAfter = data.after
 
+        Log.d("ResponsePosts", postsList.toString())
         return LoadResult.Page(
-                data = postsList,
-                prevKey = data.before,
-                nextKey = data.after
-            )
+            data = postsList,
+            prevKey = if (currentPage == 0) null else currentPage - 1,
+            nextKey = currentPage + 1
+        )
+
     }
-
-
 }

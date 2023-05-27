@@ -12,7 +12,14 @@ import com.example.reddit_top_posts.redditapi.ApiClient
 class PostsViewModel() : ViewModel() {
     private val apiClient = ApiClient()
 
-    val postsList = Pager(PagingConfig(pageSize = POSTS_NUMBER)) {
-        PostSource(apiClient)
-    }.flow.cachedIn(viewModelScope)
+    val postsList = Pager(
+        config = PagingConfig(
+            pageSize = POSTS_NUMBER,
+            enablePlaceholders = true,
+            initialLoadSize = POSTS_NUMBER * 3
+        ),
+        pagingSourceFactory = { PostSource(apiClient) }
+    )
+        .flow
+        .cachedIn(viewModelScope)
 }
