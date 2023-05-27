@@ -2,13 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/posts_fragment">
 
     <fragment
         android:id="@+id/posts_fragment"
         android:name="com.example.reddit_top_posts.ui.PostsFragment"
         android:label="fragment_posts"
-        tools:layout="@layout/fragment_posts" >
+        tools:layout="@layout/fragment_posts">
         <action
             android:id="@+id/action_posts_fragment_to_thumbnail_details_fragment"
             app:destination="@id/thumbnail_image_fragment" />
@@ -18,7 +19,7 @@
         android:id="@+id/thumbnail_image_fragment"
         android:name="com.example.reddit_top_posts.ui.ThumbnailFragment"
         android:label="fragment_thumbnail_image"
-        tools:layout="@layout/fragment_thumbnail_image" >
+        tools:layout="@layout/fragment_thumbnail_image">
         <argument
             android:name="thumbnailUrl"
             app:argType="string" />
