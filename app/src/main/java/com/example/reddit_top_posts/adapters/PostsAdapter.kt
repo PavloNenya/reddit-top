@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -59,6 +60,7 @@ class PostsAdapter :
                     error(R.drawable.error_picture)
                     listener(
                         onSuccess = { imageRequest: ImageRequest, successResult: SuccessResult ->
+                            progressBar.visibility = View.INVISIBLE
                             var isImage = false
                             Executors.newSingleThreadExecutor().execute {
                                 if (URL(post.url).openConnection().contentType.contains("image/"))
