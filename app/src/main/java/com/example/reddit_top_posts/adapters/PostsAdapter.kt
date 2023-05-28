@@ -9,13 +9,20 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.example.reddit_top_posts.redditapi.response.PostsListResponse
 import com.example.reddittopposts.R
 import com.example.reddittopposts.databinding.ItemPostBinding
-import java.util.Date
+import java.net.URL
+import java.util.*
+import java.util.concurrent.Executors
+
 
 class PostsAdapter :
-    PagingDataAdapter<PostsListResponse.Data.Child.Post, PostsAdapter.PostsViewHolder>(differCallback) {
+    PagingDataAdapter<PostsListResponse.Data.Child.Post, PostsAdapter.PostsViewHolder>(
+        differCallback
+    ) {
 
     private lateinit var binding: ItemPostBinding
     private lateinit var context: Context
@@ -46,14 +53,33 @@ class PostsAdapter :
                 author.text = "Posted by " + post.author
                 title.text = post.title
                 created.text = calculateTime(post.created)
+                comments.text = post.num_comments.toString() + " comments"
                 thumbnail.load(post.thumbnail) {
                     placeholder(R.drawable.image_placeholder)
+                    error(R.drawable.error_picture)
+                    listener(
+                        onSuccess = { imageRequest: ImageRequest, successResult: SuccessResult ->
+                            var isImage = false
+                            Executors.newSingleThreadExecutor().execute {
+                                if (URL(post.url).openConnection().contentType.contains("image/"))
+                                    isImage = true
+                            }
+
+                            thumbnail.setOnClickListener {
+                                if (isImage) {
+                                    onItemClickListener?.let {
+                                        it(post)
+                                    }
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 
-    private fun calculateTime(created: Long) : String {
+    private fun calculateTime(created: Long): String {
         val nowDate = Date().time / 1000
         val minutesPassed = (nowDate - created) / 60
         return if (minutesPassed < 60) {

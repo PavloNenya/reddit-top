@@ -8,19 +8,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.reddit_top_posts.adapters.PostsAdapter
 import com.example.reddit_top_posts.modelandview.PostsViewModel
 import com.example.reddittopposts.databinding.FragmentPostsBinding
-//import dagger.hilt.android.AndroidEntryPoint
-//import javax.inject.Inject
 
-//@AndroidEntryPoint
+
 class PostsFragment : Fragment() {
 
     private lateinit var binding: FragmentPostsBinding
-
     private val postsViewModel: PostsViewModel by viewModels()
     private var postsAdapter = PostsAdapter()
 
@@ -29,7 +25,7 @@ class PostsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentPostsBinding.inflate(layoutInflater, container, false);
+        binding = FragmentPostsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -44,8 +40,9 @@ class PostsFragment : Fragment() {
             }
 
             postsAdapter.setOnItemClickListener {
-//                val direction = PostsFragmentDirections.(it.id)
-//                findNavController().navigate(direction)
+                val direction =
+                    PostsFragmentDirections.actionPostsFragmentToThumbnailImageFragment(it.url)
+                findNavController().navigate(direction)
             }
 
             lifecycleScope.launchWhenCreated {
@@ -58,13 +55,6 @@ class PostsFragment : Fragment() {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = postsAdapter
             }
-
-//            posts.adapter = postsAdapter.withLoadStateFooter(
-//                LoadMoreAdapter {
-//                    posts.retry()
-//                }
-//            )
-
         }
     }
 }

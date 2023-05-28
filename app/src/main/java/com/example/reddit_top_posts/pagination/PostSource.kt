@@ -5,7 +5,6 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.reddit_top_posts.redditapi.ApiClient
 import com.example.reddit_top_posts.redditapi.response.PostsListResponse
-import kotlin.math.max
 
 class PostSource(
     private val apiClient: ApiClient

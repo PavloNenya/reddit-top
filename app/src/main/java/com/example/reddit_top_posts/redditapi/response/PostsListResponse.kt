@@ -27,6 +27,8 @@ data class PostsListResponse(
                 val title: String,
                 @SerializedName("thumbnail")
                 val thumbnail: String,
+                @SerializedName("url")
+                val url: String,
                 @SerializedName("author")
                 val author: String,
                 @SerializedName("created")

@@ -1,12 +1,75 @@
 package com.example.reddit_top_posts.ui
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.os.Bundle
+import android.os.Environment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
+import coil.load
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import com.example.reddit_top_posts.config.SAVED_PICTURES_DIRECTORY
+import com.example.reddittopposts.R
 import com.example.reddittopposts.databinding.FragmentThumbnailImageBinding
-//import dagger.hilt.android.AndroidEntryPoint
-//
-//@AndroidEntryPoint
+import java.io.File
+import java.io.FileOutputStream
+
 class ThumbnailFragment : Fragment() {
     private lateinit var binding: FragmentThumbnailImageBinding
+    private val args: ThumbnailFragmentArgs by navArgs()
+    private lateinit var thumbnailUrl: String
 
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentThumbnailImageBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        thumbnailUrl = args.thumbnailUrl
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
+
+            thumbnailPicture.load(thumbnailUrl) {
+                placeholder(R.drawable.image_placeholder)
+                error(R.drawable.error_picture)
+                listener(
+                    onSuccess = { imageRequest: ImageRequest, successResult: SuccessResult ->
+                        progressBar.visibility = View.INVISIBLE
+                    }
+                )
+            }
+
+            downloadButton.setOnClickListener {
+                val file =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                val imageName = thumbnailUrl.split("/").last()
+                val redditDir = File(file.absolutePath, SAVED_PICTURES_DIRECTORY)
+                if (!redditDir.exists()) {
+                    redditDir.mkdir()
+                }
+                val imageFile = File(file.absolutePath + '/' + SAVED_PICTURES_DIRECTORY, imageName)
+                val draw = binding.thumbnailPicture.drawable as BitmapDrawable
+                val bitmap = draw.bitmap
+                val fileOutPutStream = FileOutputStream(imageFile)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fileOutPutStream)
+                fileOutPutStream.flush()
+                fileOutPutStream.close()
+            }
+        }
+    }
 }
