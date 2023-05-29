@@ -63,10 +63,12 @@ class PostsAdapter :
                             progressBar.visibility = View.INVISIBLE
                             var isImage = false
                             Executors.newSingleThreadExecutor().execute {
-
-                                if (URL(post.url).openConnection().contentType.contains("image/"))
-                                    isImage = true
-
+                                try {
+                                    if (URL(post.url).openConnection().contentType.contains("image/"))
+                                        isImage = true
+                                } catch (e: Exception) {
+                                    isImage = false
+                                }
                             }
 
                             thumbnail.setOnClickListener {
