@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.reddit_top_posts.adapters.LoadPostsAdapter
 import com.example.reddit_top_posts.adapters.PostsAdapter
 import com.example.reddit_top_posts.modelandview.PostsViewModel
 import com.example.reddittopposts.databinding.FragmentPostsBinding
@@ -48,6 +51,7 @@ class PostsFragment : Fragment() {
             lifecycleScope.launchWhenCreated {
                 postsAdapter.loadStateFlow.collect {
                     val state = it.refresh
+                    progressBar.isVisible = state is LoadState.Loading
                 }
             }
 
@@ -55,6 +59,12 @@ class PostsFragment : Fragment() {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = postsAdapter
             }
+
+            posts.adapter=postsAdapter.withLoadStateFooter(
+                LoadPostsAdapter{
+                    postsAdapter.retry()
+                }
+            )
         }
     }
 }

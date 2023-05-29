@@ -6,10 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.example.reddit_top_posts.redditapi.response.PostsListResponse
@@ -37,7 +39,6 @@ class PostsAdapter :
     }
 
     override fun onBindViewHolder(holder: PostsViewHolder, position: Int) {
-        Log.d("Position", position.toString())
         holder.bind(getItem(position)!!)
         holder.setIsRecyclable(false)
     }
@@ -49,7 +50,6 @@ class PostsAdapter :
     @SuppressLint("SetTextI18n")
     inner class PostsViewHolder(item: ItemPostBinding) : RecyclerView.ViewHolder(item.root) {
         fun bind(post: PostsListResponse.Data.Child.Post) {
-            Log.d("Post", post.toString())
             binding.apply {
                 author.text = "Posted by " + post.author
                 title.text = post.title
@@ -63,8 +63,10 @@ class PostsAdapter :
                             progressBar.visibility = View.INVISIBLE
                             var isImage = false
                             Executors.newSingleThreadExecutor().execute {
+
                                 if (URL(post.url).openConnection().contentType.contains("image/"))
                                     isImage = true
+
                             }
 
                             thumbnail.setOnClickListener {
@@ -74,6 +76,9 @@ class PostsAdapter :
                                     }
                                 }
                             }
+                        },
+                        onError = { imageRequest: ImageRequest, successResult: ErrorResult ->
+                            progressBar.visibility = View.INVISIBLE
                         }
                     )
                 }

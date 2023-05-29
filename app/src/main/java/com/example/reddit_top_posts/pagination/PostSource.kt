@@ -5,6 +5,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.reddit_top_posts.redditapi.ApiClient
 import com.example.reddit_top_posts.redditapi.response.PostsListResponse
+import retrofit2.HttpException
 
 class PostSource(
     private val apiClient: ApiClient
@@ -16,19 +17,25 @@ class PostSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PostsListResponse.Data.Child.Post> {
-        val currentPage = params.key ?: 0
-        val response = apiClient.getPosts(lastAfter)
-        val data = response.body()!!.data
-        val postsList = mutableListOf<PostsListResponse.Data.Child.Post>()
-        postsList.addAll(data.posts.map { it.post })
-        lastAfter = data.after
+        return try {
+            val currentPage = params.key ?: 0
+            val response = apiClient.getPosts(lastAfter)
+            val data = response.body()!!.data
+            val postsList = mutableListOf<PostsListResponse.Data.Child.Post>()
+            postsList.addAll(data.posts.map { it.post })
+            lastAfter = data.after
 
-        Log.d("ResponsePosts", postsList.toString())
-        return LoadResult.Page(
-            data = postsList,
-            prevKey = if (currentPage == 0) null else currentPage - 1,
-            nextKey = currentPage + 1
-        )
+            LoadResult.Page(
+                data = postsList,
+                prevKey = if (currentPage == 0) null else currentPage - 1,
+                nextKey = currentPage + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }catch (e: HttpException) {
+            LoadResult.Error(e)
+        }
+
 
     }
 }
