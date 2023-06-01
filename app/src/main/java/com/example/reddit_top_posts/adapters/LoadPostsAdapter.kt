@@ -32,13 +32,15 @@ class LoadPostsAdapter(private val retry: () -> Unit) :
         binding.root
     ) {
         init {
-            binding.imageReload.setOnClickListener { retry() }
+            binding.btnReload.setOnClickListener {
+                retry()
+            }
         }
 
         fun bind(loadState: LoadState) {
             binding.apply {
-                imageReload.isVisible = loadState is LoadState.Error
-                imageReload.isVisible = loadState is LoadState.Error
+                btnReload.isVisible = loadState is LoadState.Error
+                btnReload.isVisible = loadState is LoadState.Error
             }
         }
     }

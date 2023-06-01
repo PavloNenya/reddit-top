@@ -23,9 +23,6 @@
         <argument
             android:name="thumbnailUrl"
             app:argType="string" />
-        <action
-            android:id="@+id/thumbnail_image_fragment_to_action_posts_fragment"
-            app:destination="@id/posts_fragment" />
     </fragment>
 
 </navigation>

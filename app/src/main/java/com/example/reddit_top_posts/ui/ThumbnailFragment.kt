@@ -4,9 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Environment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import coil.load
@@ -22,7 +20,8 @@ class ThumbnailFragment : Fragment() {
     private lateinit var binding: FragmentThumbnailImageBinding
     private val args: ThumbnailFragmentArgs by navArgs()
     private lateinit var thumbnailUrl: String
-
+    private var scaleGestureDetector: ScaleGestureDetector? = null
+    private lateinit var zoomListener: ZoomListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +29,11 @@ class ThumbnailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentThumbnailImageBinding.inflate(layoutInflater, container, false)
+        zoomListener = ZoomListener(
+            binding.thumbnailPicture,
+            activity?.windowManager?.defaultDisplay?.height!!,
+            activity?.windowManager?.defaultDisplay?.width!!
+        )
         return binding.root
     }
 
@@ -50,6 +54,13 @@ class ThumbnailFragment : Fragment() {
                 listener(
                     onSuccess = { imageRequest: ImageRequest, successResult: SuccessResult ->
                         progressBar.visibility = View.INVISIBLE
+                        scaleGestureDetector =
+                            ScaleGestureDetector(binding.root.context, zoomListener)
+                        root.setOnTouchListener { view: View, event: MotionEvent ->
+                            scaleGestureDetector?.onTouchEvent(event)
+                            zoomListener.onTouch(view, event)
+                            true
+                        }
                     }
                 )
             }
