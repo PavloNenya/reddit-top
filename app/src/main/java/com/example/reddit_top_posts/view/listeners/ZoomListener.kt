@@ -1,4 +1,4 @@
-package com.example.reddit_top_posts.ui
+package com.example.reddit_top_posts.view.listeners
 
 import android.util.Log
 import android.view.MotionEvent

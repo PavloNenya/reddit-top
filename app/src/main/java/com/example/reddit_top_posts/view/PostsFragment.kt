@@ -1,4 +1,4 @@
-package com.example.reddit_top_posts.ui
+package com.example.reddit_top_posts.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,17 +11,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.reddit_top_posts.adapters.LoadPostsAdapter
-import com.example.reddit_top_posts.adapters.PostsAdapter
-import com.example.reddit_top_posts.modelandview.PostsViewModel
+import com.example.reddit_top_posts.view.adapters.LoadPostsAdapter
+import com.example.reddit_top_posts.view.adapters.PostsAdapter
+import com.example.reddit_top_posts.viewmodel.PostsViewModel
 import com.example.reddittopposts.databinding.FragmentPostsBinding
 
 
 class PostsFragment : Fragment() {
 
     private lateinit var binding: FragmentPostsBinding
-    private val postsViewModel: PostsViewModel by viewModels()
     private var postsAdapter = PostsAdapter()
+
+    private val postsViewModel: PostsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

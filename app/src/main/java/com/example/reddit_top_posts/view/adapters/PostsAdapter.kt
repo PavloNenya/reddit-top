@@ -1,7 +1,6 @@
-package com.example.reddit_top_posts.adapters
+package com.example.reddit_top_posts.view.adapters
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,27 +11,22 @@ import coil.load
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import com.example.reddit_top_posts.redditapi.response.PostsListResponse
+import com.example.reddit_top_posts.api.response.PostsListResponse
 import com.example.reddittopposts.R
 import com.example.reddittopposts.databinding.ItemPostBinding
 import java.net.URL
-import java.util.*
 import java.util.concurrent.Executors
 
 
 class PostsAdapter :
-    PagingDataAdapter<PostsListResponse.Data.Child.Post, PostsAdapter.PostsViewHolder>(
-        differCallback
-    ) {
+    PagingDataAdapter<PostsListResponse.Data.Child.Post, PostsAdapter.PostsViewHolder>(differCallback) {
 
     private lateinit var binding: ItemPostBinding
-    private lateinit var context: Context
-    private var onItemClickListener: ((PostsListResponse.Data.Child.Post) -> Unit)? = null
+    private lateinit var onItemClickListener: ((PostsListResponse.Data.Child.Post) -> Unit)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         binding = ItemPostBinding.inflate(inflater, parent, false)
-        context = parent.context
         return PostsViewHolder(binding)
     }
 
@@ -51,7 +45,7 @@ class PostsAdapter :
             binding.apply {
                 author.text = "Posted by " + post.author
                 title.text = post.title
-                created.text = calculateTime(post.created)
+                created.text = post.created.toString() + " hours ago"
                 comments.text = post.num_comments.toString() + " comments"
                 thumbnail.load(post.thumbnail) {
                     placeholder(R.drawable.image_placeholder)
@@ -71,9 +65,7 @@ class PostsAdapter :
 
                             thumbnail.setOnClickListener {
                                 if (isImage) {
-                                    onItemClickListener?.let {
-                                        it(post)
-                                    }
+                                    onItemClickListener(post)
                                 }
                             }
                         },
@@ -83,17 +75,6 @@ class PostsAdapter :
                     )
                 }
             }
-        }
-    }
-
-    private fun calculateTime(created: Long): String {
-        val nowDate = Date().time / 1000
-        val minutesPassed = (nowDate - created) / 60
-        return if (minutesPassed < 60) {
-            "posted $minutesPassed minutes ago"
-        } else {
-            val hoursPassed = minutesPassed / 60
-            "posted $hoursPassed hours ago"
         }
     }
 

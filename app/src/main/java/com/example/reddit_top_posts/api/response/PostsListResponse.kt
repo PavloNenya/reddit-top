@@ -1,4 +1,4 @@
-package com.example.reddit_top_posts.redditapi.response
+package com.example.reddit_top_posts.api.response
 
 import com.google.gson.annotations.SerializedName
 
@@ -32,7 +32,7 @@ data class PostsListResponse(
                 @SerializedName("author")
                 val author: String,
                 @SerializedName("created")
-                val created: Long,
+                var created: Long,
                 @SerializedName("num_comments")
                 val num_comments: Int
             )

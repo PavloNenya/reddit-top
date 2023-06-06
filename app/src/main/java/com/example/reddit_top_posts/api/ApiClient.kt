@@ -1,12 +1,12 @@
-package com.example.reddit_top_posts.redditapi
+package com.example.reddit_top_posts.api
 
 import com.example.reddit_top_posts.config.BASE_URL
-import com.example.reddit_top_posts.redditapi.response.PostsListResponse
+import com.example.reddit_top_posts.api.response.PostsListResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ApiClient {
+object ApiClient {
     private val apiService: ApiService = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -18,4 +18,5 @@ class ApiClient {
     ): Response<PostsListResponse> {
         return apiService.getPostsList(after)
     }
+
 }

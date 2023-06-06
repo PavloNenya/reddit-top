@@ -17,7 +17,7 @@
         android:theme="@style/Theme.RedditTopPosts"
         tools:targetApi="31">
         <activity
-            android:name="com.example.reddit_top_posts.ui.MainActivity"
+            android:name="com.example.reddit_top_posts.view.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,4 @@
-package com.example.reddit_top_posts.adapters
+package com.example.reddit_top_posts.view.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

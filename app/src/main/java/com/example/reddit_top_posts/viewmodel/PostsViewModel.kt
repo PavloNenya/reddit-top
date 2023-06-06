@@ -1,4 +1,4 @@
-package com.example.reddit_top_posts.modelandview
+package com.example.reddit_top_posts.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,10 +7,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.reddit_top_posts.config.POSTS_NUMBER
 import com.example.reddit_top_posts.pagination.PostSource
-import com.example.reddit_top_posts.redditapi.ApiClient
 
-class PostsViewModel() : ViewModel() {
-    private val apiClient = ApiClient()
+class PostsViewModel : ViewModel() {
 
     val postsList = Pager(
         config = PagingConfig(
@@ -18,8 +16,9 @@ class PostsViewModel() : ViewModel() {
             enablePlaceholders = true,
             initialLoadSize = POSTS_NUMBER * 3
         ),
-        pagingSourceFactory = { PostSource(apiClient) }
+        pagingSourceFactory = { PostSource() }
     )
         .flow
         .cachedIn(viewModelScope)
+
 }

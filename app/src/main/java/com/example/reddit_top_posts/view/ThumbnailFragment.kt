@@ -1,33 +1,33 @@
-package com.example.reddit_top_posts.ui
+package com.example.reddit_top_posts.view
 
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Environment
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import com.example.reddit_top_posts.config.SAVED_PICTURES_DIRECTORY
+import com.example.reddit_top_posts.view.listeners.ZoomListener
+import com.example.reddit_top_posts.viewmodel.ThumbnailViewModel
+import com.example.reddit_top_posts.viewmodel.ViewModelFactory
 import com.example.reddittopposts.R
 import com.example.reddittopposts.databinding.FragmentThumbnailImageBinding
-import java.io.File
-import java.io.FileOutputStream
 
 class ThumbnailFragment : Fragment() {
     private lateinit var binding: FragmentThumbnailImageBinding
-    private val args: ThumbnailFragmentArgs by navArgs()
     private lateinit var thumbnailUrl: String
-    private var scaleGestureDetector: ScaleGestureDetector? = null
+    private lateinit var scaleGestureDetector: ScaleGestureDetector
     private lateinit var zoomListener: ZoomListener
+    private val args: ThumbnailFragmentArgs by navArgs()
+    private val viewModel: ThumbnailViewModel by viewModels { ViewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentThumbnailImageBinding.inflate(layoutInflater, container, false)
         zoomListener = ZoomListener(
             binding.thumbnailPicture,
@@ -43,6 +43,7 @@ class ThumbnailFragment : Fragment() {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,34 +54,24 @@ class ThumbnailFragment : Fragment() {
                 error(R.drawable.error_picture)
                 listener(
                     onSuccess = { imageRequest: ImageRequest, successResult: SuccessResult ->
-                        progressBar.visibility = View.INVISIBLE
-                        scaleGestureDetector =
-                            ScaleGestureDetector(binding.root.context, zoomListener)
+                        progressBar.visibility = View.GONE
+                        scaleGestureDetector = ScaleGestureDetector(binding.root.context, zoomListener)
                         root.setOnTouchListener { view: View, event: MotionEvent ->
-                            scaleGestureDetector?.onTouchEvent(event)
+                            scaleGestureDetector.onTouchEvent(event)
                             zoomListener.onTouch(view, event)
                             true
                         }
+                        downloadButton.setOnClickListener {
+                            viewModel.saveImage(thumbnailUrl, thumbnailPicture)
+                        }
+                    },
+                    onError = {request, result ->
+                        progressBar.visibility = View.GONE
                     }
                 )
             }
 
-            downloadButton.setOnClickListener {
-                val file =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                val imageName = thumbnailUrl.split("/").last()
-                val redditDir = File(file.absolutePath, SAVED_PICTURES_DIRECTORY)
-                if (!redditDir.exists()) {
-                    redditDir.mkdir()
-                }
-                val imageFile = File(file.absolutePath + '/' + SAVED_PICTURES_DIRECTORY, imageName)
-                val draw = binding.thumbnailPicture.drawable as BitmapDrawable
-                val bitmap = draw.bitmap
-                val fileOutPutStream = FileOutputStream(imageFile)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fileOutPutStream)
-                fileOutPutStream.flush()
-                fileOutPutStream.close()
-            }
+
         }
     }
 }

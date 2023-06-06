@@ -1,4 +1,4 @@
-package com.example.reddit_top_posts.ui
+package com.example.reddit_top_posts.view
 
 import android.Manifest
 import android.content.pm.PackageManager

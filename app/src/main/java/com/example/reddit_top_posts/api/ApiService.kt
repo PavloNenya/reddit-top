@@ -1,7 +1,7 @@
-package com.example.reddit_top_posts.redditapi
+package com.example.reddit_top_posts.api
 
 import com.example.reddit_top_posts.config.POSTS_NUMBER
-import com.example.reddit_top_posts.redditapi.response.PostsListResponse
+import com.example.reddit_top_posts.api.response.PostsListResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
