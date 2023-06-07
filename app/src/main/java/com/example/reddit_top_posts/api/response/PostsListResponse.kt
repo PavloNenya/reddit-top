@@ -2,6 +2,8 @@ package com.example.reddit_top_posts.api.response
 
 import com.google.gson.annotations.SerializedName
 
+typealias Post = PostsListResponse.Data.Child.Post
+
 data class PostsListResponse(
     @SerializedName("data")
     val data: Data

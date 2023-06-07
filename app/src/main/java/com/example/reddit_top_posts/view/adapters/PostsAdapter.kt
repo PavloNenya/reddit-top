@@ -11,18 +11,17 @@ import coil.load
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import com.example.reddit_top_posts.api.response.PostsListResponse
+import com.example.reddit_top_posts.api.response.Post
 import com.example.reddittopposts.R
 import com.example.reddittopposts.databinding.ItemPostBinding
 import java.net.URL
 import java.util.concurrent.Executors
 
-
 class PostsAdapter :
-    PagingDataAdapter<PostsListResponse.Data.Child.Post, PostsAdapter.PostsViewHolder>(differCallback) {
+    PagingDataAdapter<Post, PostsAdapter.PostsViewHolder>(differCallback) {
 
     private lateinit var binding: ItemPostBinding
-    private lateinit var onItemClickListener: ((PostsListResponse.Data.Child.Post) -> Unit)
+    private lateinit var onItemClickListener: ((Post) -> Unit)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -35,13 +34,13 @@ class PostsAdapter :
         holder.setIsRecyclable(false)
     }
 
-    fun setOnItemClickListener(listener: (PostsListResponse.Data.Child.Post) -> Unit) {
+    fun setOnItemClickListener(listener: (Post) -> Unit) {
         onItemClickListener = listener
     }
 
     @SuppressLint("SetTextI18n")
     inner class PostsViewHolder(item: ItemPostBinding) : RecyclerView.ViewHolder(item.root) {
-        fun bind(post: PostsListResponse.Data.Child.Post) {
+        fun bind(post: Post) {
             binding.apply {
                 author.text = "Posted by " + post.author
                 title.text = post.title
@@ -51,8 +50,8 @@ class PostsAdapter :
                     placeholder(R.drawable.image_placeholder)
                     error(R.drawable.error_picture)
                     listener(
-                        onSuccess = { imageRequest: ImageRequest, successResult: SuccessResult ->
-                            progressBar.visibility = View.INVISIBLE
+                        onSuccess = { _: ImageRequest, _: SuccessResult ->
+                            progressBar.visibility = View.GONE
                             var isImage = false
                             Executors.newSingleThreadExecutor().execute {
                                 try {
@@ -69,8 +68,8 @@ class PostsAdapter :
                                 }
                             }
                         },
-                        onError = { imageRequest: ImageRequest, successResult: ErrorResult ->
-                            progressBar.visibility = View.INVISIBLE
+                        onError = { _: ImageRequest, _: ErrorResult ->
+                            progressBar.visibility = View.GONE
                         }
                     )
                 }
@@ -79,15 +78,15 @@ class PostsAdapter :
     }
 
     companion object {
-        val differCallback = object : DiffUtil.ItemCallback<PostsListResponse.Data.Child.Post>() {
+        val differCallback = object : DiffUtil.ItemCallback<Post>() {
             override fun areItemsTheSame(
-                oldItem: PostsListResponse.Data.Child.Post,
-                newItem: PostsListResponse.Data.Child.Post
+                oldItem: Post,
+                newItem: Post
             ) = oldItem.id == newItem.id
 
             override fun areContentsTheSame(
-                oldItem: PostsListResponse.Data.Child.Post,
-                newItem: PostsListResponse.Data.Child.Post
+                oldItem: Post,
+                newItem: Post
             ) = oldItem == newItem
 
         }

@@ -1,6 +1,6 @@
 package com.example.reddit_top_posts.view.listeners
 
-import android.util.Log
+import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -26,6 +26,7 @@ class ZoomListener(
         return true
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View?, event: MotionEvent): Boolean {
         var measuredH = imageView.measuredHeight.toFloat()
         var measuredW = imageView.measuredWidth.toFloat()
@@ -92,9 +93,6 @@ class ZoomListener(
                 }
             }
         }
-
-        Log.d("height", trueHeight.toString())
-        Log.d("width", trueWidth.toString())
 
         trueX = imageView.x - ((trueWidth - screenWidth) / 2)
         trueY = imageView.y - ((trueHeight - screenHeight) / 2)

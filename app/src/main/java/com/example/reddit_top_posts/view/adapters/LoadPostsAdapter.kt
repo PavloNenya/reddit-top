@@ -9,24 +9,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.reddittopposts.databinding.ItemReloadBinding
 
 class LoadPostsAdapter(private val retry: () -> Unit) :
-    LoadStateAdapter<LoadPostsAdapter.ViewHolder>() {
+    LoadStateAdapter<LoadPostsAdapter.LoadViewHolder>() {
 
     private lateinit var binding: ItemReloadBinding
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         loadState: LoadState
-    ): ViewHolder {
+    ): LoadViewHolder {
         binding = ItemReloadBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(retry)
+        return LoadViewHolder(retry)
     }
 
     override fun onBindViewHolder(
-        holder: ViewHolder,
+        holder: LoadViewHolder,
         loadState: LoadState
     ) = holder.bind(loadState)
 
-    inner class ViewHolder(
+    inner class LoadViewHolder(
         retry: () -> Unit
     ) : RecyclerView.ViewHolder(
         binding.root
@@ -39,7 +39,6 @@ class LoadPostsAdapter(private val retry: () -> Unit) :
 
         fun bind(loadState: LoadState) {
             binding.apply {
-                btnReload.isVisible = loadState is LoadState.Error
                 btnReload.isVisible = loadState is LoadState.Error
             }
         }

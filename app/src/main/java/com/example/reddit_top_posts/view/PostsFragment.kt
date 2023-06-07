@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +17,7 @@ import com.example.reddit_top_posts.view.adapters.LoadPostsAdapter
 import com.example.reddit_top_posts.view.adapters.PostsAdapter
 import com.example.reddit_top_posts.viewmodel.PostsViewModel
 import com.example.reddittopposts.databinding.FragmentPostsBinding
+import kotlinx.coroutines.launch
 
 
 class PostsFragment : Fragment() {
@@ -28,7 +31,7 @@ class PostsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentPostsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
@@ -36,36 +39,39 @@ class PostsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
+            postsAdapter.setOnItemClickListener {
+                findNavController().navigate(
+                    PostsFragmentDirections.actionPostsFragmentToThumbnailImageFragment(it.url)
+                )
+            }
 
-            lifecycleScope.launchWhenCreated {
-                postsViewModel.postsList.collect {
-                    postsAdapter.submitData(it)
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    postsViewModel.postsList.collect {
+                        postsAdapter.submitData(it)
+                    }
                 }
             }
 
-            postsAdapter.setOnItemClickListener {
-                val direction =
-                    PostsFragmentDirections.actionPostsFragmentToThumbnailImageFragment(it.url)
-                findNavController().navigate(direction)
-            }
-
-            lifecycleScope.launchWhenCreated {
-                postsAdapter.loadStateFlow.collect {
-                    val state = it.refresh
-                    progressBar.isVisible = state is LoadState.Loading
+            viewLifecycleOwner.lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    postsAdapter.loadStateFlow.collect {
+                        progressBar.isVisible = it.refresh is LoadState.Loading
+                    }
                 }
             }
 
             posts.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = postsAdapter
+
+                adapter = postsAdapter.withLoadStateFooter(
+                    LoadPostsAdapter {
+                        postsAdapter.retry()
+                    }
+                )
             }
 
-            posts.adapter=postsAdapter.withLoadStateFooter(
-                LoadPostsAdapter{
-                    postsAdapter.retry()
-                }
-            )
         }
     }
 }

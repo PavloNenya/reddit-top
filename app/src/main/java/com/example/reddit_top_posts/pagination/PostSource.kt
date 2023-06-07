@@ -3,23 +3,23 @@ package com.example.reddit_top_posts.pagination
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.reddit_top_posts.api.ApiClient
-import com.example.reddit_top_posts.api.response.PostsListResponse
+import com.example.reddit_top_posts.api.response.Post
 import retrofit2.HttpException
 import java.util.*
 
-class PostSource : PagingSource<Int, PostsListResponse.Data.Child.Post>() {
+class PostSource : PagingSource<Int, Post>() {
     private var lastAfter: String? = null
 
-    override fun getRefreshKey(state: PagingState<Int, PostsListResponse.Data.Child.Post>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
         return null
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PostsListResponse.Data.Child.Post> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {
         return try {
             val currentPage = params.key ?: 0
             val response = ApiClient.getPosts(lastAfter)
             val data = response.body()!!.data
-            val postsList = mutableListOf<PostsListResponse.Data.Child.Post>()
+            val postsList = mutableListOf<Post>()
             postsList.addAll(data.posts.map {
                 val post = it.post
                 post.created = calculateHoursAgo(post.created)
@@ -34,13 +34,10 @@ class PostSource : PagingSource<Int, PostsListResponse.Data.Child.Post>() {
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
-        }catch (e: HttpException) {
+        } catch (e: HttpException) {
             LoadResult.Error(e)
         }
-
-
     }
-
 
     private fun calculateHoursAgo(created: Long): Long {
         val nowDate = Date().time / 1000
