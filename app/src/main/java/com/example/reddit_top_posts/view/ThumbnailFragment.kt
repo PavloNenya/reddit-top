@@ -29,10 +29,14 @@ class ThumbnailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentThumbnailImageBinding.inflate(layoutInflater, container, false)
+        val width = activity?.windowManager?.defaultDisplay?.width!!
+        val height = activity?.windowManager?.defaultDisplay?.height!!
+
         zoomListener = ZoomListener(
             binding.thumbnailPicture,
-            activity?.windowManager?.defaultDisplay?.height!!,
-            activity?.windowManager?.defaultDisplay?.width!!
+            height,
+            width,
+            activity?.resources?.configuration?.orientation
         )
         return binding.root
     }
@@ -53,9 +57,10 @@ class ThumbnailFragment : Fragment() {
                 placeholder(R.drawable.image_placeholder)
                 error(R.drawable.error_picture)
                 listener(
-                    onSuccess = { imageRequest: ImageRequest, successResult: SuccessResult ->
+                    onSuccess = { _: ImageRequest, _: SuccessResult ->
                         progressBar.visibility = View.GONE
-                        scaleGestureDetector = ScaleGestureDetector(binding.root.context, zoomListener)
+                        scaleGestureDetector =
+                            ScaleGestureDetector(binding.root.context, zoomListener)
                         root.setOnTouchListener { view: View, event: MotionEvent ->
                             scaleGestureDetector.onTouchEvent(event)
                             zoomListener.onTouch(view, event)
@@ -65,7 +70,7 @@ class ThumbnailFragment : Fragment() {
                             viewModel.saveImage(thumbnailUrl, thumbnailPicture)
                         }
                     },
-                    onError = {request, result ->
+                    onError = { _, _ ->
                         progressBar.visibility = View.GONE
                     }
                 )

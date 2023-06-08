@@ -1,6 +1,8 @@
 package com.example.reddit_top_posts.view.listeners
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
@@ -10,8 +12,9 @@ import android.widget.ImageView
 
 class ZoomListener(
     private val imageView: ImageView,
-    private val screenHeight: Int,
-    private val screenWidth: Int
+    private var screenHeight: Int,
+    private var screenWidth: Int,
+    private val orientation: Int?
 ) :
     ScaleGestureDetector.SimpleOnScaleGestureListener(), OnTouchListener {
     private val nullCoord = -1f
@@ -38,8 +41,16 @@ class ZoomListener(
             measuredH = ((intrinsicH * measuredW / intrinsicW) * imageView.scaleY)
         }
 
-        val trueWidth = measuredW * imageView.scaleX
-        val trueHeight = measuredH
+        val trueWidth = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            measuredW * imageView.scaleX
+        } else {
+            measuredW
+        }
+        val trueHeight = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            measuredH
+        } else {
+            measuredH * imageView.scaleY
+        }
 
         when (event.action) {
             MotionEvent.ACTION_MOVE -> {
@@ -80,7 +91,12 @@ class ZoomListener(
                     imageView.y = 0f
                 } else if (imageView.scaleX > 1f || imageView.scaleY > 1f) {
                     if (trueX + trueWidth < screenWidth) {
-                        imageView.x += screenWidth - (trueX + trueWidth)
+
+                        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            imageView.x = 0f
+                        } else {
+                            imageView.x = screenWidth - (trueX + trueWidth)
+                        }
                     } else if (trueX > 0 && trueX + trueWidth > screenWidth) {
                         imageView.x -= trueX
                     }
@@ -98,6 +114,20 @@ class ZoomListener(
         trueY = imageView.y - ((trueHeight - screenHeight) / 2)
         prevX = event.x
         prevY = event.y
+
+        Log.d("screenWidth", screenWidth.toString())
+        Log.d("screenHeight", screenHeight.toString())
+        Log.d("trueX", trueX.toString())
+        Log.d("trueY", trueY.toString())
+        Log.d("imageX", imageView.x.toString())
+        Log.d("imageY", imageView.y.toString())
+        Log.d("trueWidth", trueWidth.toString())
+        Log.d("trueHeight", trueHeight.toString())
+        Log.d("measuredW", measuredW.toString())
+        Log.d("measuredH", measuredH.toString())
+        Log.d("intrinsicW", intrinsicW.toString())
+        Log.d("intrinsicH", intrinsicH.toString())
+
         return true
     }
 }

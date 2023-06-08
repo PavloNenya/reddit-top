@@ -45,13 +45,17 @@ class PostsFragment : Fragment() {
                 )
             }
 
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.CREATED) {
-                    postsViewModel.postsList.collect {
-                        postsAdapter.submitData(it)
+            postsViewModel.postsLiveData.observe(viewLifecycleOwner) {
+                lifecycleScope.launch {
+                    repeatOnLifecycle(Lifecycle.State.CREATED) {
+                        postsViewModel.postsLiveData.value?.collect {
+                            postsAdapter.submitData(it)
+                        }
                     }
                 }
             }
+
+
 
             viewLifecycleOwner.lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.CREATED) {
